@@ -4,25 +4,48 @@
     <title>AI Knowledge Assistant</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<button onclick="getMessage()">Connect Backend</button>
+    <h1>AI Knowledge Assistant</h1>
 
-<br><br>
+    <button onclick="getMessage()">Connect Backend</button>
 
-<input type="file" id="pdfFile" accept=".pdf">
-<button onclick="uploadPDF()">Upload PDF</button>
+    <br><br>
 
-<br><br>
+    <!-- Upload PDF -->
+    <input type="file" id="pdfFile" accept=".pdf">
+    <button onclick="uploadPDF()">Upload PDF</button>
 
-<input type="text" id="question" placeholder="Ask a question">
-<button onclick="askQuestion()">Ask</button>
+    <br><br>
 
-<br><br>
+    <!-- Saved documents -->
+    <h3>Select Document</h3>
 
-<p id="result"></p>
+    <select id="documentSelect">
+        <option value="">Select a document</option>
+    </select>
 
-<script src="script.js"></script>
+    <button onclick="loadDocuments()">Refresh Documents</button>
+
+    <br><br>
+
+    <!-- Ask question -->
+    <input
+        type="text"
+        id="question"
+        placeholder="Ask a question"
+    >
+
+    <button onclick="askQuestion()">Ask</button>
+
+    <br><br>
+
+    <!-- Result -->
+    <p id="result"></p>
+
+    <script src="script.js"></script>
+    
 
 </body>
 </html>
