@@ -22,7 +22,6 @@ def create_database():
 
 def save_document(filename, content):
     connection = sqlite3.connect(DATABASE)
-
     cursor = connection.cursor()
 
     cursor.execute(
@@ -30,8 +29,12 @@ def save_document(filename, content):
         (filename, content)
     )
 
+    document_id = cursor.lastrowid
+
     connection.commit()
     connection.close()
+
+    return document_id
 
 
 def get_document(document_id):

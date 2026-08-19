@@ -67,11 +67,9 @@ async def upload_file(file: UploadFile = File(...)):
 
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
 
-    # Save uploaded PDF
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Read PDF
     reader = PdfReader(file_path)
 
     text = ""
@@ -82,25 +80,25 @@ async def upload_file(file: UploadFile = File(...)):
         if page_text:
             text += page_text + "\n"
 
-    # Store extracted text
     pdf_text = text
 
-    # Save document to SQLite
-    save_document(file.filename, text)
-
-    print("PDF TEXT:")
-    print(pdf_text)
+    document_id = save_document(file.filename, text)
 
     return {
         "message": "File uploaded successfully",
-        "filename": file.filename
+        "filename": file.filename,
+        "document_id": document_id
     }
 
 
 @app.post("/ask")
 async def ask(question: Question):
 
+    print("Received document ID:", question.document_id)
+
     document = get_document(question.document_id)
+
+    print("Found document:", document)
 
     if document is None:
         return {
