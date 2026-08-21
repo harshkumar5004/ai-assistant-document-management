@@ -1,37 +1,31 @@
 // ==========================================
+// Backend URL
+// ==========================================
+
+const API_BASE_URL = "https://ai-assistant-document-management.onrender.com";
+
+
+// ==========================================
 // Check Backend Connection
 // ==========================================
 
 async function getMessage() {
-
     try {
-
-        const response = await fetch(
-            "http://127.0.0.1:8000/"
-        );
+        const response = await fetch(`${API_BASE_URL}/`);
 
         if (!response.ok) {
-
-            throw new Error(
-                "Backend connection failed"
-            );
+            throw new Error("Backend connection failed");
         }
 
         const data = await response.json();
 
-        document.getElementById(
-            "result"
-        ).innerText = data.message;
+        document.getElementById("result").innerText = data.message;
 
     } catch (error) {
-
         console.error(error);
 
-        document.getElementById(
-            "result"
-        ).innerText =
+        document.getElementById("result").innerText =
             "Cannot connect to backend.";
-
     }
 }
 
@@ -57,7 +51,6 @@ async function uploadPDF() {
     }
 
     const formData = new FormData();
-
     formData.append("file", file);
 
     try {
@@ -66,7 +59,7 @@ async function uploadPDF() {
             "Uploading PDF...";
 
         const response = await fetch(
-            "http://127.0.0.1:8000/upload",
+            `${API_BASE_URL}/upload`,
             {
                 method: "POST",
                 body: formData
@@ -138,7 +131,7 @@ async function uploadPDF() {
         );
 
         document.getElementById("result").innerText =
-            "Error uploading PDF. Make sure the backend is running.";
+            "Error uploading PDF. Please try again.";
     }
 }
 
@@ -152,7 +145,7 @@ async function loadDocuments() {
     try {
 
         const response = await fetch(
-            "http://127.0.0.1:8000/documents"
+            `${API_BASE_URL}/documents`
         );
 
         if (!response.ok) {
@@ -174,7 +167,7 @@ async function loadDocuments() {
             '<option value="">Select a document</option>';
 
         // Add documents
-        data.documents.forEach(function(doc) {
+        data.documents.forEach(function (doc) {
 
             const option =
                 document.createElement("option");
@@ -209,88 +202,73 @@ async function loadDocuments() {
 
 async function askQuestion() {
 
-    const question =
-        document.getElementById(
-            "question"
-        ).value.trim();
+    const select =
+        document.getElementById("documentSelect");
 
+    // Get selected option
+    const selectedOption =
+        select.options[select.selectedIndex];
 
     const documentId =
-        document.getElementById(
-            "documentSelect"
-        ).value;
+        selectedOption
+            ? selectedOption.value
+            : "";
+
+    const filename =
+        selectedOption
+            ? selectedOption.textContent
+            : "";
+
+    const question =
+        document
+            .getElementById("question")
+            .value
+            .trim();
+
+    console.log("================================");
+    console.log("Selected document ID:", documentId);
+    console.log("Selected filename:", filename);
+    console.log("Question:", question);
+    console.log("================================");
 
 
-    console.log(
-        "Selected document ID:",
-        documentId
-    );
-
-
-    console.log(
-        "Question:",
-        question
-    );
-
-
-    // ==================================
     // Check document
-    // ==================================
+    if (!documentId || documentId === "0") {
 
-    if (!documentId) {
-
-        alert(
-            "Please select a document."
-        );
-
+        alert("Please select a valid document.");
         return;
     }
 
 
-    // ==================================
     // Check question
-    // ==================================
-
     if (!question) {
 
-        alert(
-            "Please enter a question."
-        );
-
+        alert("Please enter a question.");
         return;
     }
 
 
     try {
 
-        document.getElementById(
-            "result"
-        ).innerText =
+        document.getElementById("result").innerText =
             "Thinking...";
 
 
-        const response =
-            await fetch(
-                "http://127.0.0.1:8000/ask",
-                {
-                    method: "POST",
+        const response = await fetch(
+            `${API_BASE_URL}/ask`,
+            {
+                method: "POST",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-                    body: JSON.stringify({
-
-                        document_id:
-                            Number(documentId),
-
-                        question:
-                            question
-
-                    })
-                }
-            );
+                body: JSON.stringify({
+                    document_id: Number(documentId),
+                    question: question
+                })
+            }
+        );
 
 
         if (!response.ok) {
@@ -311,9 +289,7 @@ async function askQuestion() {
         );
 
 
-        document.getElementById(
-            "result"
-        ).innerText =
+        document.getElementById("result").innerText =
             data.answer ||
             "No answer received.";
 
@@ -325,12 +301,8 @@ async function askQuestion() {
             error
         );
 
-
-        document.getElementById(
-            "result"
-        ).innerText =
+        document.getElementById("result").innerText =
             "Error asking question.";
-
     }
 }
 
